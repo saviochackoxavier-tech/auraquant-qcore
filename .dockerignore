@@ -1,0 +1,36 @@
+# AuraQuant // Q-CORE — Docker build exclusions
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Version control
+.git/
+.gitignore
+
+# Environment & secrets
+.env
+.env.*
+*.env
+
+# Local database files (use managed DB in prod)
+*.db
+*.sqlite
+*.sqlite3
+
+# Node (not used in backend; exclude if present)
+node_modules/
+npm-debug.log*
+
+# IDE & OS artifacts
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Docs & dev-only files
+README.md
+*.md
