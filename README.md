@@ -32,7 +32,7 @@
 
 **AuraQuant // Q-CORE** bridges modern quantitative finance with physics-informed computational mechanics and deep learning optimization. It delivers an interactive, real-time command dashboard designed for:
 
-- **Continuous PDE Wave Shock Propagation:** Modeling liquidity contagion across multi-asset order books using 2D finite difference hyperbolic wave equations ($\frac{\partial^2 \psi}{\partial t^2} = c^2 \nabla^2 \psi$).
+- **Continuous PDE Wave Shock Propagation:** Modeling liquidity contagion across multi-asset order books using 2D finite difference hyperbolic wave equations (∂²ψ/∂t² = c²∇²ψ).
 - **Non-Convex Neural Loss Landscapes:** Visualizing 3D gradient descent trajectories over non-convex objective topologies in real time.
 - **Parametric Portfolio Risk & Stress-Testing:** Simulating multi-asset geometric Brownian motion with Cholesky-correlated return matrices, calculating parametric Value-at-Risk (95% CI), annualized volatility, and maximum peak-to-trough drawdowns.
 - **Defensive API Gatekeeping:** Enforcing token-bucket quota middleware and WebSocket heartbeat protocols to ensure resilient client-server synchronization under high concurrency.
@@ -62,51 +62,51 @@
 ## 🏗 System Architecture
 
 ```mermaid
-flowchart TD
-    subgraph Frontend["Frontend Tier (Glassmorphic WebGL / UI)"]
-        UI[Glassmorphic Control Dashboard]
-        ThreeWave[Three.js 2D Wave PDE Viewport]
-        ThreeNeural[Three.js 3D Loss Landscape Viewport]
-        ChartRisk[Chart.js Real-Time Risk Chart]
-        Alerts[RiskAlertEngine & Toast Dispatcher]
-        Exporter[Blob CSV & CSS Print PDF Exporter]
+flowchart TB
+    subgraph ClientLayer["Client Layer (Glassmorphic WebGL / UI)"]
+        UI["Glassmorphic UI (index.html / Tailwind)"]
+        WebGL1["Three.js 2D Wave PDE Canvas"]
+        WebGL2["Three.js 3D Neural Loss Surface"]
+        Charts["Chart.js VaR & Trajectory"]
+        CSVPDF["CSV/PDF Parser & Blob Exporter"]
+        Alerts["Real-Time Risk Alert Dispatcher"]
     end
 
-    subgraph Security["API Gateway & Middleware Layer"]
-        TQ[TokenQuotaMiddleware (Cost Evaluation & 429 Guard)]
-        SCM[SecurityConnectionManager (WS Rate-Limiting)]
+    subgraph SecurityLayer["Gateway & Security Layer"]
+        TQ["TokenQuotaMiddleware (Payload Cost & HTTP 429 Guard)"]
+        SCM["SecurityConnectionManager (IP Rate-Limit & Ping/Pong Heartbeat)"]
     end
 
-    subgraph Backend["Computational Backend (FastAPI / Python 3.11)"]
-        Router[Async REST Endpoints & WS Routers]
-        WaveEngine[NumPy 2D Wave PDE Solver]
-        MarketEngine[Cholesky Correlated Geometric Brownian Motion]
-        NeuralEngine[Xavier-Initialized MLP Simulator]
+    subgraph ComputeLayer["Compute & Quant Layer (FastAPI / Python 3.11)"]
+        API["FastAPI Async Router (server.py @ :8765)"]
+        Wave["DampedWaveEngine (NumPy 9-Point Laplacian PDE)"]
+        Market["MarketQuantService (Cholesky NxN GBM & Parametric VaR)"]
+        Neural["NumPyNeuralEngine (Xavier MLP Backprop)"]
     end
 
-    subgraph Persistence["Storage & Persistence Tier"]
-        DB[(PostgreSQL 15 / SQLite Fallback)]
-        ORM[SQLAlchemy 2.0 Async Session Engine]
+    subgraph PersistenceLayer["Persistence Layer"]
+        ORM["SQLAlchemy 2.0 Async Session"]
+        DB[("PostgreSQL 15 / SQLite Fallback")]
     end
 
     UI -->|HTTP Requests with X-Token-Cost| TQ
-    TQ --> Router
+    TQ --> API
     UI <-->|Bidirectional WS Heartbeat & Frames| SCM
-    SCM <--> Router
+    SCM <--> API
 
-    Router --> WaveEngine
-    Router --> MarketEngine
-    Router --> NeuralEngine
+    API --> Wave
+    API --> Market
+    API --> Neural
 
-    WaveEngine --> ThreeWave
-    MarketEngine --> ChartRisk
-    NeuralEngine --> ThreeNeural
+    Wave --> WebGL1
+    Market --> Charts
+    Neural --> WebGL2
 
-    Router --> ORM
+    API --> ORM
     ORM --> DB
 
-    MarketEngine -.->|Metrics Breaches| Alerts
-    ChartRisk -.->|Telemetry Export| Exporter
+    Market -.->|Threshold Breach| Alerts
+    Charts -.->|Telemetry Export| CSVPDF
 ```
 
 ---
